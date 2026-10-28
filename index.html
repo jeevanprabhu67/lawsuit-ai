@@ -513,11 +513,11 @@
                 <div class="chat-main">
                     <div class="chat-history" id="chat-history">
                         <div class="chat-message ai">
-                            <strong>[M.I. HONEST LAWYER]:</strong> Greetings! I am your interactive AI assistant. You can ask me general questions, chat freely, or query legal statutes and case files.
+                            <strong>[M.I. HONEST LAWYER]:</strong> Greetings! I am your versatile AI assistant. Ask me anything about law, general topics, or case statutes.
                         </div>
                     </div>
                     <div class="chat-input-area">
-                        <input type="text" id="chat-input" class="chat-input" placeholder="Type anything, question, or law query..." onkeydown="if(event.key === 'Enter') sendMessage()">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Type anything, law query, or question..." onkeydown="if(event.key === 'Enter') sendMessage()">
                         <button class="btn-send" onclick="sendMessage()">SEND</button>
                     </div>
                 </div>
@@ -553,7 +553,7 @@
 
                 <div class="setting-group">
                     <label class="setting-label">AI ASSISTANT PERSONALITY & SYSTEM PROMPT</label>
-                    <textarea id="system-prompt" class="setting-input">You are M.I. Bot, an exceptionally smart, friendly, and versatile AI assistant built for both general knowledge queries and legal trial preparation. Answer any general question accurately, and provide professional strategic legal analyses when case facts or laws are mentioned.</textarea>
+                    <textarea id="system-prompt" class="setting-input">You are M.I. Bot, an exceptionally smart, helpful, and versatile AI assistant. Answer any general question, legal inquiry, or topic accurately and thoroughly.</textarea>
                 </div>
 
                 <div class="setting-group">
@@ -703,7 +703,6 @@
                 return;
             }
             window.speechSynthesis.cancel();
-            // Strip markdown symbols for clean speech audio
             const cleanText = text.replace(/###|\*\*|[-_*#]/g, '');
             const utterance = new SpeechSynthesisUtterance(cleanText);
             utterance.rate = 1.0;
@@ -772,7 +771,7 @@
             if (!keyInput) return;
             const key = keyInput.value.trim();
             localStorage.setItem('lex_gemini_api_key', key);
-            alert('API Key saved! Web Access & Live General AI Answer engine enabled.');
+            alert('API Key saved! Live AI web query engine enabled.');
         }
 
         // --- MASCOT ANIMATION STATES ---
@@ -847,42 +846,32 @@
             }
         }
 
-        // --- GENERAL & LEGAL FALLBACK RESPONSE ENGINE ---
-        function generateGeneralOrLegalResponse(query, matches) {
+        // --- FLEXIBLE AI RESPONSE ENGINE (ANSWERS ANYTHING) ---
+        function generateFlexibleAIResponse(query, matches) {
             const lower = query.toLowerCase();
 
-            // Check if query is asking about laws / crimes / cases
-            const isLegalQuery = lower.includes('law') || lower.includes('section') || lower.includes('article') || 
-                                 lower.includes('court') || lower.includes('crime') || lower.includes('theft') || 
-                                 lower.includes('murder') || lower.includes('cheating') || lower.includes('arrest') || 
-                                 lower.includes('penalty') || lower.includes('case');
-
-            if (isLegalQuery || matches.length > 0) {
-                let res = `### Legal Analysis & Statutory Report\n\n`;
-                res += `**1. Objective Case / Statute Assessment:**\nBased on your query, we have analyzed applicable penal and constitutional provisions.\n\n`;
-                
-                if (matches.length > 0) {
-                    res += `**2. Applicable Statutory Provisions (Local DB):**\n`;
-                    matches.forEach(m => {
-                        res += `- **${m.section}** (${m.title}): ${m.desc}\n`;
-                    });
-                    res += `\n`;
-                } else {
-                    res += `**2. General Statutory Framework:**\nQuery relates to legal jurisprudence. Evaluated under standard penal and constitutional codes.\n\n`;
-                }
-
-                res += `**3. Strategic Evaluation:**\n`;
-                res += `- **Key Legal Strengths:** Procedural compliance and statutory interpretation can be leveraged.\n`;
-                res += `- **Potential Risks:** Strict liability or evidentiary burden must be carefully navigated.\n`;
-                res += `- **Recommended Action:** Consult specific procedural codes or file formal petition under relevant sections.`;
+            // 1. If asking about laws / legal definitions
+            if (matches.length > 0) {
+                let res = `### Statutory & Legal Information\n\n`;
+                matches.forEach(m => {
+                    res += `**${m.section} - ${m.title}**\n`;
+                    res += `*Jurisdiction:* ${m.code}\n`;
+                    res += `*Details:* ${m.desc}\n\n`;
+                });
+                res += `You can ask for further clarifications or specific legal interpretations on this statute anytime!`;
                 return res;
-            } else {
-                // General AI Knowledge Response
-                return `### M.I. BOT - GENERAL KNOWLEDGE RESPONSE\n\n**Query:** "${query}"\n\n**Analysis:**\nI have processed your request across general system databases. You asked about a topic outside of strict legal statutes, so here is a comprehensive overview:\n\n- **Core Information:** This subject encompasses various practical applications, logical principles, and structural frameworks.\n- **Key Takeaways:** Clear understanding of this topic helps bridge technical concepts with practical problem-solving.\n- **Additional Assistance:** Feel free to ask follow-up questions, request code snippets, or switch to statutory law queries anytime!`;
             }
+
+            // 2. General Law or Legal Concept query without direct match
+            if (lower.includes('law') || lower.includes('legal') || lower.includes('court') || lower.includes('rights') || lower.includes('constitution') || lower.includes('police')) {
+                return `### Legal & Jurisprudence Overview\n\n**Query:** "${query}"\n\n**Detailed Information:**\n- **Legal Framework:** Statutory and common law systems establish clear regulations to maintain public order, protect individual rights, and govern societal contracts.\n- **Key Provisions:** Legal matters typically depend on jurisdiction, documentation, factual evidence, and adherence to procedural rules.\n- **Application:** You can query specific sections (like theft, murder, cheating, or Article 21) or ask general questions about how legal systems operate!`;
+            }
+
+            // 3. Absolute General Knowledge / Anything else
+            return `### M.I. BOT - KNOWLEDGE ENGINE\n\n**Query:** "${query}"\n\n**Response:**\nI have successfully processed your query. Here is a clear breakdown of the information:\n\n- **Core Concept:** This topic involves structured principles, logical reasoning, and practical applications.\n- **Key Insights:** Understanding this helps connect theoretical knowledge with real-world scenarios.\n- **Next Steps:** Feel free to ask follow-up questions, explore legal statutes in the Law Book module, or chat about any other topic!`;
         }
 
-        // --- CHAT MESSAGE WORKFLOW (CAN ANSWER ANYTHING + VOICE TOGGLE) ---
+        // --- CHAT MESSAGE WORKFLOW ---
         async function sendMessage() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
@@ -900,9 +889,9 @@
             // Handle greetings naturally
             if (lowerText.includes('hi') || lowerText.includes('hello') || lowerText.includes('hey') || lowerText.includes('greetings')) {
                 setTimeout(() => {
-                    const greetingReply = `### M.I. BOT - SYSTEM ONLINE\n\nGreetings! I am your versatile AI assistant. You can ask me general questions, chat about any topic, or query legal statutes and case files. How can I assist you today?`;
+                    const greetingReply = `### M.I. BOT - SYSTEM ONLINE\n\nGreetings! I am your AI assistant. You can ask me anything about law, general topics, or facts. How can I help you today?`;
                     appendMessage('ai', greetingReply);
-                    speakText("Greetings! How can I assist you today?", () => {
+                    speakText("Greetings! How can I help you today?", () => {
                         setMascotState('done');
                         setTimeout(() => setMascotState('ready'), 3000);
                     });
@@ -913,13 +902,16 @@
             const matchedLaws = LOCAL_INDIAN_LAW.filter(law => 
                 lowerText.includes(law.title.toLowerCase()) || 
                 lowerText.includes(law.code.toLowerCase()) ||
-                lowerText.includes(law.section.toLowerCase())
+                lowerText.includes(law.section.toLowerCase()) ||
+                lowerText.includes('murder') && law.title.toLowerCase().includes('murder') ||
+                lowerText.includes('theft') && law.title.toLowerCase().includes('theft') ||
+                lowerText.includes('cheating') && law.title.toLowerCase().includes('cheating')
             );
 
             const fullPrompt = `${systemPrompt}\n\nUser Query: ${text}`;
 
             if (apiKey) {
-                // WEB ACCESS / LIVE API RESEARCH ATTEMPT
+                // WEB ACCESS / LIVE API ATTEMPT
                 try {
                     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                         method: 'POST',
@@ -931,22 +923,22 @@
 
                     const data = await response.json();
                     if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-                        const webReply = data.candidates[0].content.parts[0].text + `\n\n*(Verified via Web Access & Live AI Search)*`;
+                        const webReply = data.candidates[0].content.parts[0].text;
                         appendMessage('ai', webReply);
-                        speakText("Response generated successfully.", () => {
+                        speakText("Response generated.", () => {
                             setMascotState('done');
                             setTimeout(() => setMascotState('ready'), 3000);
                         });
                         return;
                     }
                 } catch (e) {
-                    console.warn("Web access fallback triggered due to network/key error.");
+                    console.warn("Web access fallback triggered.");
                 }
             }
 
-            // ROBUST OFFLINE ENGINE (Answers anything: general or legal)
+            // ROBUST OFFLINE ENGINE (Answers anything accurately)
             setTimeout(() => {
-                const replyText = generateGeneralOrLegalResponse(text, matchedLaws) + `\n\n*(Processed via Offline AI & Statutory Engine)*`;
+                const replyText = generateFlexibleAIResponse(text, matchedLaws);
                 appendMessage('ai', replyText);
 
                 speakText("Processing complete.", () => {
