@@ -88,6 +88,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
 
         /* Views / Interfaces */
@@ -175,6 +176,7 @@
             margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 1px dashed var(--border-color);
+            flex-shrink: 0;
         }
 
         .btn-exit {
@@ -196,6 +198,7 @@
         /* Interface 2: AI Chat View */
         #chat-view {
             flex-direction: column;
+            overflow: hidden;
         }
 
         .chat-container {
@@ -203,6 +206,7 @@
             flex: 1;
             gap: 20px;
             height: calc(100% - 50px);
+            overflow: hidden;
         }
 
         /* Claude-style Mini Interactive Bot Panel Styles */
@@ -217,6 +221,7 @@
             justify-content: space-between;
             padding: 20px;
             box-shadow: var(--glow);
+            flex-shrink: 0;
         }
 
         .mascot-avatar {
@@ -260,12 +265,13 @@
             border-radius: 8px;
             padding: 15px;
             box-shadow: var(--glow);
-            overflow: hidden;
+            overflow: hidden; /* CRUCIAL FIX FOR SCROLLING */
+            min-width: 0;
         }
 
         .chat-history {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: auto !important; /* Forces scrollbar */
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -302,6 +308,7 @@
             display: flex;
             gap: 10px;
             margin-top: 15px;
+            flex-shrink: 0;
         }
 
         .chat-input {
@@ -471,7 +478,7 @@
                     [1] AI CHAT
                 </button>
                 <button class="hub-btn" onclick="navigateTo('settings-view')">
-                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c-.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
                     [2] SETTINGS
                 </button>
                 <button class="hub-btn" onclick="navigateTo('lawbook-view')">
@@ -497,222 +504,4 @@
                             <circle cx="38" cy="40" r="5" fill="var(--text-color)"/>
                             <circle cx="62" cy="40" r="5" fill="var(--text-color)"/>
                             <path d="M 40 55 Q 50 62 60 55" fill="none" stroke="var(--border-color)" stroke-width="3" stroke-linecap="round"/>
-                            <line x1="50" y1="20" x2="50" y2="8" stroke="var(--border-color)" stroke-width="3"/>
-                            <circle cx="50" cy="6" r="4" fill="var(--accent-color)"/>
-                            <path d="M 30 70 L 70 70 L 65 95 L 35 95 Z" fill="none" stroke="var(--border-color)" stroke-width="3"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="mascot-name">M.I. BOT</div>
-                        <div class="mascot-status" id="mascot-status">STATUS: READY</div>
-                    </div>
-                </div>
-
-                <!-- Main Chat Window -->
-                <div class="chat-main">
-                    <div class="chat-history" id="chat-history">
-                        <div class="chat-message ai">
-                            <strong>[M.I. HONEST LAWYER]:</strong> Greetings! I am your interactive legal strategist. State your case facts or query, and I'll analyze the statutes for you.
-                        </div>
-                    </div>
-                    <div class="chat-input-area">
-                        <input type="text" id="chat-input" class="chat-input" placeholder="Type case details or law query..." onkeydown="if(event.key === 'Enter') sendMessage()">
-                        <button class="btn-send" onclick="sendMessage()">SEND</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- INTERFACE 3: SETTINGS -->
-        <div id="settings-view" class="view">
-            <div class="sub-nav">
-                <h2>SYSTEM CONFIGURATION</h2>
-                <button class="btn-exit" onclick="navigateTo('hub-view')">[EXIT SETTINGS]</button>
-            </div>
-            <div class="settings-container">
-                <div class="setting-group">
-                    <label class="setting-label">UI DISPLAY THEME</label>
-                    <button class="toggle-btn" onclick="toggleTheme()">TOGGLE LIGHT/DARK MODE</button>
-                </div>
-
-                <div class="setting-group">
-                    <label class="setting-label">GEMINI API KEY (FOR ONLINE SEARCH & LAWS)</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="password" id="api-key-input" class="setting-input" placeholder="Paste your Gemini API key here..." style="flex: 1;">
-                        <button class="toggle-btn" onclick="saveApiKey()">SAVE KEY</button>
-                    </div>
-                    <div style="font-size: 0.8rem; color: var(--text-dim);">Stored locally in your browser session. Required for international live web searches.</div>
-                </div>
-
-                <div class="setting-group">
-                    <label class="setting-label">LAWYER PERSONALITY & SYSTEM PROMPT</label>
-                    <textarea id="system-prompt" class="setting-input">You are an exceptionally honest, highly strategic AI Lawyer built for courtroom trial preparation. Always provide balanced evaluations of cases: detail the defense's strongest points, expose potential weaknesses/risks, cite exact law sections, and maintain an objective, courtroom-ready approach.</textarea>
-                </div>
-
-                <div class="setting-group">
-                    <label class="setting-label">OFFLINE LOCAL DATABASE STATUS</label>
-                    <div style="font-size: 0.9rem; color: var(--text-dim);">
-                        • Indian Penal Code (BNS 2023) [LOADED]<br>
-                        • Code of Criminal Procedure (BNSS 2023) [LOADED]<br>
-                        • Indian Evidence Act (BSA 2023) [LOADED]<br>
-                        • Constitution of India [LOADED]
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- INTERFACE 4: LAW BOOK -->
-        <div id="lawbook-view" class="view">
-            <div class="sub-nav">
-                <h2>STATUTORY LAW BOOK & DATABASE</h2>
-                <button class="btn-exit" onclick="navigateTo('hub-view')">[EXIT LAW BOOK]</button>
-            </div>
-            <div class="law-container">
-                <div class="law-controls">
-                    <select id="country-select" onchange="onCountryChange()">
-                        <option value="IN">India (Offline Local Database)</option>
-                        <option value="US">United States (Live Search)</option>
-                        <option value="UK">United Kingdom (Live Search)</option>
-                        <option value="INT">International Law (Live Search)</option>
-                    </select>
-                    <input type="text" id="law-search-input" class="chat-input search-input" placeholder="Search section, article, keyword..." onkeydown="if(event.key==='Enter') searchLaw()">
-                    <button class="btn-send" onclick="searchLaw()">SEARCH</button>
-                </div>
-                <div class="law-results" id="law-results">
-                    <div class="law-card">
-                        <div class="law-card-title">Select a jurisdiction and enter search terms to query legal statutes.</div>
-                        <div class="law-card-meta">Local Indian laws work 100% offline. International queries use live search index.</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        // --- LOCAL DATABASE (INDIAN LAW) ---
-        const LOCAL_INDIAN_LAW = [
-            {
-                section: "BNS Section 103 (IPC 302)",
-                title: "Punishment for Murder",
-                code: "BNS / IPC",
-                desc: "Whoever commits murder shall be punished with death or imprisonment for life, and shall also be liable to fine."
-            },
-            {
-                section: "BNS Section 303 (IPC 378/379)",
-                title: "Theft",
-                code: "BNS / IPC",
-                desc: "Whoever, intending to take dishonestly any movable property out of the possession of any person without that person's consent, moves that property, commits theft."
-            },
-            {
-                section: "BNS Section 318 (IPC 420)",
-                title: "Cheating and dishonestly inducing delivery of property",
-                code: "BNS / IPC",
-                desc: "Whoever cheats and thereby dishonestly induces the person deceived to deliver any property shall be punished with imprisonment up to 7 years and fine."
-            },
-            {
-                section: "Article 21",
-                title: "Protection of Life and Personal Liberty",
-                code: "Constitution of India",
-                desc: "No person shall be deprived of his life or personal liberty except according to procedure established by law."
-            },
-            {
-                section: "Article 14",
-                title: "Equality before Law",
-                code: "Constitution of India",
-                desc: "The State shall not deny to any person equality before the law or the equal protection of the laws within the territory of India."
-            },
-            {
-                section: "BNSS Section 35 (CrPC 41)",
-                title: "When Police may arrest without warrant",
-                code: "BNSS / CrPC",
-                desc: "Outlines conditions under which a police officer may arrest any person without an order from a Magistrate and without a warrant."
-            },
-            {
-                section: "BSA Section 45 (Evidence Act Sec 45)",
-                title: "Opinions of Experts",
-                code: "BSA / Evidence Act",
-                desc: "When the Court has to form an opinion upon a point of foreign law or of science or art, or identity of handwriting, the opinions of experts are relevant facts."
-            }
-        ];
-
-        // --- SPEECH SYNTHESIS CONTROLLER ---
-        function speakText(text, onComplete) {
-            if (!('speechSynthesis' in window)) {
-                if (onComplete) onComplete();
-                return;
-            }
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1.0;
-            utterance.pitch = 0.9;
-            utterance.onend = () => { if (onComplete) onComplete(); };
-            utterance.onerror = () => { if (onComplete) onComplete(); };
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // Navigation
-        function navigateTo(viewId) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-        }
-
-        // Clock
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('sys-clock').innerText = now.toTimeString().split(' ')[0];
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // Theme Toggle
-        function toggleTheme() {
-            const body = document.body;
-            if (body.getAttribute('data-theme') === 'light') {
-                body.removeAttribute('data-theme');
-            } else {
-                body.setAttribute('data-theme', 'light');
-            }
-        }
-
-        // --- API KEY & HISTORY STORAGE ---
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedKey = localStorage.getItem('lex_gemini_api_key');
-            if (savedKey) {
-                const inputElem = document.getElementById('api-key-input');
-                if (inputElem) inputElem.value = savedKey;
-            }
-
-            const savedHistory = JSON.parse(localStorage.getItem('lex_chat_history') || '[]');
-            if (savedHistory.length > 0) {
-                const chatHistory = document.getElementById('chat-history');
-                chatHistory.innerHTML = '';
-                savedHistory.forEach(msg => {
-                    appendMessage(msg.sender, msg.text, false);
-                });
-            }
-        });
-
-        function saveApiKey() {
-            const keyInput = document.getElementById('api-key-input');
-            if (!keyInput) return;
-            const key = keyInput.value.trim();
-            localStorage.setItem('lex_gemini_api_key', key);
-            alert('API Key saved successfully to browser storage!');
-        }
-
-        // --- INTERACTIVE BOT ANIMATION STATES ---
-        function setMascotState(state) {
-            const avatarContainer = document.getElementById('mascot-avatar');
-            const statusText = document.getElementById('mascot-status');
-
-            if (state === 'working') {
-                statusText.innerText = "STATUS: WORKING ON LAPTOP...";
-                avatarContainer.innerHTML = `
-                    <svg viewBox="0 0 100 100" width="100%" height="100%">
-                        <rect x="20" y="15" width="60" height="45" rx="8" fill="none" stroke="var(--border-color)" stroke-width="4"/>
-                        <circle cx="38" cy="35" r="5" fill="var(--text-color)"/>
-                        <circle cx="62" cy="35" r="5" fill="var(--text-color)"/>
-                        <path d="M 42 48 L 58 48" fill="none" stroke="var(--border-color)" stroke-width="3"/>
-                        <line x1="50" y1="15" x2="50" y2="5" stroke="var(--border-color)" stroke-width="3"/>
-                        <circle cx="50" cy="4" r="4" fill="var(--accent-color)"/>
-                        <path d="M 30 60 L 70 60 L 65 85 L 35 85 Z" fill="none" stroke="var(--border-color)" stroke-width="3"/>
+                            <line x1="50" y1="20
