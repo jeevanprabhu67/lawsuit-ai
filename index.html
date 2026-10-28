@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LEX-AGENT AI | Terminal Legal Assistant</title>
+    <title>LEX-AGENT AI | Offline Legal Assistant</title>
     <!-- Google Fonts for Terminal Look -->
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -194,17 +194,85 @@
             color: #fff;
         }
 
-        /* Interface 2: AI Chat View */
+        /* Interface 2: AI Chat View with Library Sidebar */
         .chat-container {
             display: flex;
             flex: 1;
-            gap: 20px;
+            gap: 15px;
             height: calc(100% - 50px);
             overflow: hidden;
         }
 
+        /* Chat Library Sidebar */
+        .chat-library-panel {
+            width: 240px;
+            background: var(--panel-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            gap: 10px;
+            box-shadow: var(--glow);
+        }
+
+        .library-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            border-bottom: 1px solid var(--text-dim);
+            padding-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-new-chat {
+            background: var(--border-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 6px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .btn-new-chat:hover {
+            box-shadow: 0 0 10px var(--border-color);
+        }
+
+        .chat-sessions-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .session-item {
+            background: var(--bg-color);
+            border: 1px solid var(--text-dim);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: 0.2s;
+        }
+
+        .session-item:hover, .session-item.active {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background: rgba(0, 255, 255, 0.05);
+        }
+
         .mascot-panel {
-            width: 280px;
+            width: 220px;
             background: var(--panel-bg);
             border: 2px solid var(--border-color);
             border-radius: 8px;
@@ -212,38 +280,38 @@
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            padding: 20px;
+            padding: 15px;
             box-shadow: var(--glow);
         }
 
         .mascot-avatar {
-            width: 140px;
-            height: 140px;
+            width: 110px;
+            height: 110px;
             position: relative;
             animation: float 3s ease-in-out infinite;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-6px); }
         }
 
         .mascot-name {
             font-family: var(--font-title);
-            font-size: 2.2rem;
-            margin-top: 10px;
+            font-size: 1.8rem;
+            margin-top: 5px;
             letter-spacing: 2px;
             text-align: center;
         }
 
         .mascot-status {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--accent-color);
             background: rgba(0, 255, 255, 0.1);
             border: 1px solid var(--accent-color);
-            padding: 6px 12px;
+            padding: 4px 8px;
             border-radius: 4px;
-            margin-top: 10px;
+            margin-top: 8px;
             text-align: center;
             width: 100%;
         }
@@ -366,11 +434,6 @@
             outline: none;
         }
 
-        textarea {
-            resize: vertical;
-            height: 100px;
-        }
-
         .toggle-btn {
             background: var(--bg-color);
             border: 1px solid var(--border-color);
@@ -448,7 +511,7 @@
     <header>
         <div class="title">
             <span>[LEX-AGENT AI]</span>
-            <span class="badge" id="mode-badge">OFFLINE: IND LAW</span>
+            <span class="badge" id="mode-badge">100% SECURE OFFLINE MODE</span>
         </div>
         <div>
             <span id="sys-clock">00:00:00</span>
@@ -475,13 +538,24 @@
             </div>
         </div>
 
-        <!-- INTERFACE 2: AI CHAT -->
+        <!-- INTERFACE 2: AI CHAT WITH LIBRARY SIDEBAR -->
         <div id="chat-view" class="view">
             <div class="sub-nav">
                 <h2>AI LEGAL COUNSEL CHAT</h2>
                 <button class="btn-exit" onclick="navigateTo('hub-view')">[EXIT CHAT]</button>
             </div>
             <div class="chat-container">
+                <!-- CHAT LIBRARY SIDEBAR -->
+                <div class="chat-library-panel">
+                    <div class="library-title">
+                        <span>CHAT ARCHIVE</span>
+                        <span style="font-size:0.7rem; color:var(--text-dim);" id="session-count">0</span>
+                    </div>
+                    <button class="btn-new-chat" onclick="startNewChat()">+ NEW CHAT</button>
+                    <div class="chat-sessions-list" id="chat-sessions-list"></div>
+                </div>
+
+                <!-- MASCOT PANEL -->
                 <div class="mascot-panel">
                     <div class="mascot-avatar" id="mascot-avatar">
                         <svg viewBox="0 0 100 100" width="100%" height="100%">
@@ -500,14 +574,15 @@
                     </div>
                 </div>
 
+                <!-- CHAT MAIN -->
                 <div class="chat-main">
                     <div class="chat-history" id="chat-history">
                         <div class="chat-message ai">
-                            <strong>[M.I. HONEST LAWYER]:</strong> Greetings! I am your interactive legal strategist. State your case facts or query, and I'll analyze the statutes for you.
+                            <strong>[M.I. HONEST LAWYER]:</strong> Hello! I am your secure offline Indian Law Assistant. Ask me about theft, murder, cheating, or Article 21!
                         </div>
                     </div>
                     <div class="chat-input-area">
-                        <input type="text" id="chat-input" class="chat-input" placeholder="Type case details or law query..." onkeydown="if(event.key === 'Enter') sendMessage()">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Ask a legal question (e.g. 'Tell me about theft')..." onkeydown="if(event.key === 'Enter') sendMessage()">
                         <button class="btn-send" onclick="sendMessage()">SEND</button>
                     </div>
                 </div>
@@ -523,30 +598,18 @@
             <div class="settings-container">
                 <div class="setting-group">
                     <label class="setting-label">UI DISPLAY THEME</label>
-                    <button class="toggle-btn" onclick="toggleTheme()">TOGGLE LIGHT/DARK MODE</button>
+                    <button class="toggle-btn" onclick="toggleTheme()">TOGGLE LIGHT/DARK/DARK MODE</button>
                 </div>
-
                 <div class="setting-group">
-                    <label class="setting-label">GEMINI API KEY (FOR ONLINE SEARCH & LAWS)</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="password" id="api-key-input" class="setting-input" placeholder="Paste your Gemini API key here..." style="flex: 1;">
-                        <button class="toggle-btn" onclick="saveApiKey()">SAVE KEY</button>
-                    </div>
-                    <div style="font-size: 0.8rem; color: var(--text-dim);">Stored locally in your browser session. Required for international live web searches.</div>
+                    <label class="setting-label">VOICE SYNTHESIS (TTS)</label>
+                    <button class="toggle-btn" id="voice-toggle-btn" onclick="toggleVoice()">VOICE: ENABLED</button>
                 </div>
-
                 <div class="setting-group">
-                    <label class="setting-label">LAWYER PERSONALITY & SYSTEM PROMPT</label>
-                    <textarea id="system-prompt" class="setting-input">You are an exceptionally honest, highly strategic AI Lawyer built for courtroom trial preparation. Always provide balanced evaluations of cases: detail the defense's strongest points, expose potential weaknesses/risks, cite exact law sections, and maintain an objective, courtroom-ready approach.</textarea>
-                </div>
-
-                <div class="setting-group">
-                    <label class="setting-label">OFFLINE LOCAL DATABASE STATUS</label>
+                    <label class="setting-label">OFFLINE DATABASE STATUS</label>
                     <div style="font-size: 0.9rem; color: var(--text-dim);">
-                        • Indian Penal Code (BNS 2023) [LOADED]<br>
-                        • Code of Criminal Procedure (BNSS 2023) [LOADED]<br>
-                        • Indian Evidence Act (BSA 2023) [LOADED]<br>
-                        • Constitution of India [LOADED]
+                        • Indian Penal Code & BNS 2023 [LOADED & SECURE]<br>
+                        • Code of Criminal Procedure / BNSS [LOADED & SECURE]<br>
+                        • Constitution of India [LOADED & SECURE]
                     </div>
                 </div>
             </div>
@@ -560,19 +623,15 @@
             </div>
             <div class="law-container">
                 <div class="law-controls">
-                    <select id="country-select" onchange="onCountryChange()">
-                        <option value="IN">India (Offline Local Database)</option>
-                        <option value="US">United States (Live Search)</option>
-                        <option value="UK">United Kingdom (Live Search)</option>
-                        <option value="INT">International Law (Live Search)</option>
+                    <select id="country-select">
+                        <option value="IN">India (Secure Offline Database)</option>
                     </select>
-                    <input type="text" id="law-search-input" class="chat-input search-input" placeholder="Search section, article, keyword..." onkeydown="if(event.key==='Enter') searchLaw()">
+                    <input type="text" id="law-search-input" class="chat-input search-input" placeholder="Search section, article, keyword (e.g. theft, murder)..." onkeydown="if(event.key==='Enter') searchLaw()">
                     <button class="btn-send" onclick="searchLaw()">SEARCH</button>
                 </div>
                 <div class="law-results" id="law-results">
                     <div class="law-card">
-                        <div class="law-card-title">Select a jurisdiction and enter search terms to query legal statutes.</div>
-                        <div class="law-card-meta">Local Indian laws work 100% offline. International queries use live search index.</div>
+                        <div class="law-card-title">Enter search terms (e.g., 'theft', 'murder', 'Article 21') to query local statutes instantly.</div>
                     </div>
                 </div>
             </div>
@@ -582,17 +641,11 @@
     <script>
         // --- NAVIGATION CONTROLLER ---
         function navigateTo(viewId) {
-            const views = document.querySelectorAll('.view');
-            views.forEach(v => {
-                v.classList.remove('active');
-            });
-            const targetView = document.getElementById(viewId);
-            if (targetView) {
-                targetView.classList.add('active');
-            }
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
         }
 
-        // --- LOCAL DATABASE (INDIAN LAW) ---
+        // --- LOCAL HARDCODED INDIAN LAW DATABASE ---
         const LOCAL_INDIAN_LAW = [
             {
                 section: "BNS Section 103 (IPC 302)",
@@ -638,281 +691,209 @@
             }
         ];
 
-        // --- SPEECH SYNTHESIS CONTROLLER ---
-        function speakText(text, onComplete) {
-            if (!('speechSynthesis' in window)) {
-                if (onComplete) onComplete();
+        // --- CHAT LIBRARY ARCHIVE MANAGEMENT ---
+        let currentSessionId = null;
+
+        function loadChatSessions() {
+            const sessions = JSON.parse(localStorage.getItem('lex_chat_sessions') || '{}');
+            const listContainer = document.getElementById('chat-sessions-list');
+            listContainer.innerHTML = '';
+            const sessionKeys = Object.keys(sessions);
+            document.getElementById('session-count').innerText = sessionKeys.length;
+
+            if (sessionKeys.length === 0) {
+                listContainer.innerHTML = '<div style="font-size:0.75rem; color:var(--text-dim); padding:5px; text-align:center;">No past chats</div>';
                 return;
             }
+
+            sessionKeys.sort().reverse().forEach(id => {
+                const session = sessions[id];
+                const item = document.createElement('div');
+                item.className = `session-item ${id === currentSessionId ? 'active' : ''}`;
+                item.innerText = session.title || "Untitled Session";
+                item.onclick = () => switchSession(id);
+                listContainer.appendChild(item);
+            });
+        }
+
+        function startNewChat() {
+            currentSessionId = 'session_' + Date.now();
+            const sessions = JSON.parse(localStorage.getItem('lex_chat_sessions') || '{}');
+            sessions[currentSessionId] = {
+                title: "New Legal Inquiry",
+                messages: [{ sender: 'ai', text: 'Hello! I am your secure offline Indian Law Assistant. Ask me about theft, murder, cheating, or Article 21!' }]
+            };
+            localStorage.setItem('lex_chat_sessions', JSON.stringify(sessions));
+            renderCurrentSession();
+            loadChatSessions();
+        }
+
+        function switchSession(id) {
+            currentSessionId = id;
+            loadChatSessions();
+            renderCurrentSession();
+        }
+
+        function renderCurrentSession() {
+            const sessions = JSON.parse(localStorage.getItem('lex_chat_sessions') || '{}');
+            const chatHistory = document.getElementById('chat-history');
+            chatHistory.innerHTML = '';
+
+            if (!currentSessionId || !sessions[currentSessionId]) {
+                startNewChat();
+                return;
+            }
+
+            sessions[currentSessionId].messages.forEach(msg => {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `chat-message ${msg.sender}`;
+                const title = msg.sender === 'user' ? '<strong>[YOU]:</strong> ' : '<strong>[M.I. HONEST LAWYER]:</strong> ';
+                msgDiv.innerHTML = title + (window.marked ? marked.parse(msg.text) : msg.text);
+                chatHistory.appendChild(msgDiv);
+            });
+
+            setTimeout(() => { chatHistory.scrollTop = chatHistory.scrollHeight; }, 50);
+        }
+
+        function saveMessageToCurrentSession(sender, text) {
+            const sessions = JSON.parse(localStorage.getItem('lex_chat_sessions') || '{}');
+            if (!currentSessionId || !sessions[currentSessionId]) {
+                currentSessionId = 'session_' + Date.now();
+                sessions[currentSessionId] = { title: text.slice(0, 25) + '...', messages: [] };
+            }
+            if (sender === 'user' && sessions[currentSessionId].title === "New Legal Inquiry") {
+                sessions[currentSessionId].title = text.slice(0, 25) + (text.length > 25 ? '...' : '');
+            }
+            sessions[currentSessionId].messages.push({ sender, text });
+            localStorage.setItem('lex_chat_sessions', JSON.stringify(sessions));
+            loadChatSessions();
+        }
+
+        // --- VOICE SYNTHESIS ---
+        let voiceEnabled = true;
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            const btn = document.getElementById('voice-toggle-btn');
+            btn.innerText = voiceEnabled ? "VOICE: ENABLED" : "VOICE: MUTED";
+            if (!voiceEnabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+        }
+
+        function speakText(text) {
+            if (!voiceEnabled || !('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
+            const cleanText = text.replace(/###|\*\*|[-_*#]/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
             utterance.rate = 1.0;
             utterance.pitch = 0.9;
-            utterance.onend = () => { if (onComplete) onComplete(); };
-            utterance.onerror = () => { if (onComplete) onComplete(); };
             window.speechSynthesis.speak(utterance);
         }
 
-        // Clock
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('sys-clock').innerText = now.toTimeString().split(' ')[0];
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+        // Clock & Theme
+        setInterval(() => {
+            document.getElementById('sys-clock').innerText = new Date().toTimeString().split(' ')[0];
+        }, 1000);
 
-        // Theme Toggle
         function toggleTheme() {
-            const body = document.body;
-            if (body.getAttribute('data-theme') === 'light') {
-                body.removeAttribute('data-theme');
-            } else {
-                body.setAttribute('data-theme', 'light');
-            }
+            document.body.toggleAttribute('data-theme', document.body.getAttribute('data-theme') !== 'light');
         }
 
-        // API Key Storage & Chat Initialization
+        // Init
         window.addEventListener('DOMContentLoaded', () => {
-            const savedKey = localStorage.getItem('lex_gemini_api_key');
-            if (savedKey) {
-                const inputElem = document.getElementById('api-key-input');
-                if (inputElem) inputElem.value = savedKey;
-            }
-
-            const savedHistory = JSON.parse(localStorage.getItem('lex_chat_history') || '[]');
-            if (savedHistory.length > 0) {
-                const chatHistory = document.getElementById('chat-history');
-                chatHistory.innerHTML = '';
-                savedHistory.forEach(msg => {
-                    appendMessage(msg.sender, msg.text, false);
-                });
-            }
+            const sessions = JSON.parse(localStorage.getItem('lex_chat_sessions') || '{}');
+            const keys = Object.keys(sessions);
+            if (keys.length > 0) currentSessionId = keys[keys.length - 1];
+            else startNewChat();
+            loadChatSessions();
+            renderCurrentSession();
         });
 
-        function saveApiKey() {
-            const keyInput = document.getElementById('api-key-input');
-            if (!keyInput) return;
-            const key = keyInput.value.trim();
-            localStorage.setItem('lex_gemini_api_key', key);
-            alert('API Key saved successfully to browser storage!');
-        }
-
-        // --- MASCOT ANIMATION STATES ---
+        // Mascot animations
         function setMascotState(state) {
-            const avatarContainer = document.getElementById('mascot-avatar');
             const statusText = document.getElementById('mascot-status');
-
-            if (state === 'working') {
-                statusText.innerText = "STATUS: WORKING ON LAPTOP...";
-                avatarContainer.innerHTML = `
-                    <svg viewBox="0 0 100 100" width="100%" height="100%">
-                        <rect x="20" y="15" width="60" height="45" rx="8" fill="none" stroke="var(--border-color)" stroke-width="4"/>
-                        <circle cx="38" cy="35" r="5" fill="var(--text-color)"/>
-                        <circle cx="62" cy="35" r="5" fill="var(--text-color)"/>
-                        <path d="M 42 48 L 58 48" fill="none" stroke="var(--border-color)" stroke-width="3"/>
-                        <line x1="50" y1="15" x2="50" y2="5" stroke="var(--border-color)" stroke-width="3"/>
-                        <circle cx="50" cy="4" r="4" fill="var(--accent-color)"/>
-                        <path d="M 30 60 L 70 60 L 65 85 L 35 85 Z" fill="none" stroke="var(--border-color)" stroke-width="3"/>
-                        <text x="72" y="55" font-size="18">👍</text>
-                        <rect x="22" y="73" width="56" height="18" rx="2" fill="var(--panel-bg)" stroke="var(--accent-color)" stroke-width="2"/>
-                        <line x1="18" y1="92" x2="82" y2="92" stroke="var(--accent-color)" stroke-width="3"/>
-                    </svg>
-                `;
-            } else if (state === 'done') {
-                statusText.innerText = "STATUS: AND DONE!";
-                avatarContainer.innerHTML = `
-                    <svg viewBox="0 0 100 100" width="100%" height="100%">
-                        <rect x="20" y="20" width="60" height="50" rx="8" fill="none" stroke="var(--border-color)" stroke-width="4"/>
-                        <circle cx="38" cy="40" r="5" fill="var(--text-color)"/>
-                        <circle cx="62" cy="40" r="5" fill="var(--text-color)"/>
-                        <path d="M 38 52 Q 50 66 62 52" fill="none" stroke="var(--border-color)" stroke-width="3" stroke-linecap="round"/>
-                        <line x1="50" y1="20" x2="50" y2="8" stroke="var(--border-color)" stroke-width="3"/>
-                        <circle cx="50" cy="6" r="5" fill="var(--border-color)"/>
-                        <path d="M 30 70 L 70 70 L 65 95 L 35 95 Z" fill="none" stroke="var(--border-color)" stroke-width="3"/>
-                    </svg>
-                `;
-            } else {
-                statusText.innerText = "STATUS: READY";
-                avatarContainer.innerHTML = `
-                    <svg viewBox="0 0 100 100" width="100%" height="100%">
-                        <rect x="20" y="20" width="60" height="50" rx="8" fill="none" stroke="var(--border-color)" stroke-width="4"/>
-                        <circle cx="38" cy="40" r="5" fill="var(--text-color)"/>
-                        <circle cx="62" cy="40" r="5" fill="var(--text-color)"/>
-                        <path d="M 40 55 Q 50 62 60 55" fill="none" stroke="var(--border-color)" stroke-width="3" stroke-linecap="round"/>
-                        <line x1="50" y1="20" x2="50" y2="8" stroke="var(--border-color)" stroke-width="3"/>
-                        <circle cx="50" cy="6" r="4" fill="var(--accent-color)"/>
-                        <path d="M 30 70 L 70 70 L 65 95 L 35 95 Z" fill="none" stroke="var(--border-color)" stroke-width="3"/>
-                    </svg>
-                `;
-            }
+            statusText.innerText = state === 'working' ? "STATUS: ANALYZING LAW..." : "STATUS: READY";
         }
 
-        // Append Chat Messages with Auto-Scroll
-        function appendMessage(sender, text, save = true) {
+        function appendMessageToUI(sender, text) {
             const chatHistory = document.getElementById('chat-history');
             const msg = document.createElement('div');
             msg.className = `chat-message ${sender}`;
-            
-            const title = sender === 'user' ? '<strong>[YOU]:</strong> ' : '<strong>[M.I. HONEST LAWYER]:</strong> ';
-            msg.innerHTML = title + (window.marked ? marked.parse(text) : text);
-            
+            msg.innerHTML = (sender === 'user' ? '<strong>[YOU]:</strong> ' : '<strong>[M.I. HONEST LAWYER]:</strong> ') + (window.marked ? marked.parse(text) : text);
             chatHistory.appendChild(msg);
-            
-            setTimeout(() => {
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-            }, 50);
-
-            if (save) {
-                const history = JSON.parse(localStorage.getItem('lex_chat_history') || '[]');
-                history.push({ sender, text });
-                localStorage.setItem('lex_chat_history', JSON.stringify(history));
-            }
+            setTimeout(() => { chatHistory.scrollTop = chatHistory.scrollHeight; }, 50);
         }
 
-        // --- OFFLINE FALLBACK LAWYER RESPONSE ---
-        function generateLawyerResponse(query, matches) {
-            let res = `### Legal Analysis & Trial Strategy\n\n`;
-            res += `**1. Objective Case Assessment:**\nBased on your statement, we need to analyze both prosecution strength and statutory defense options.\n\n`;
-            
-            if (matches.length > 0) {
-                res += `**2. Applicable Statutory Provisions (Local DB):**\n`;
-                matches.forEach(m => {
-                    res += `- **${m.section}** (${m.title}): ${m.desc}\n`;
-                });
-                res += `\n`;
-            } else {
-                res += `**2. General Statutory Framework:**\nQuery relates to general criminal/civil jurisprudence. Evaluating under standard codes.\n\n`;
-            }
-
-            res += `**3. Honest Strategy & Win Probability:**\n`;
-            res += `- **Strengths:** Clear lack of mens rea (criminal intent) can be argued depending on physical evidence.\n`;
-            res += `- **Weaknesses/Risks:** Strict liability under relevant statutory provisions may shift evidentiary burden.\n`;
-            res += `- **Recommended Courtroom Action:** File for early discharge or request forensic verification under Evidence Act procedures.`;
-
-            return res;
-        }
-
-        // --- ASYNC CHAT MESSAGE & API WORKFLOW ---
-        async function sendMessage() {
+        // --- 100% SECURE OFFLINE LAWYER REASONING ENGINE ---
+        function sendMessage() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if (!text) return;
 
-            appendMessage('user', text);
+            saveMessageToCurrentSession('user', text);
+            appendMessageToUI('user', text);
             input.value = '';
-
             setMascotState('working');
 
-            const apiKey = localStorage.getItem('lex_gemini_api_key');
-            const systemPrompt = document.getElementById('system-prompt').value;
+            setTimeout(() => {
+                const lower = text.toLowerCase();
+                let reply = "";
 
-            const matchedLaws = LOCAL_INDIAN_LAW.filter(law => 
-                text.toLowerCase().includes(law.title.toLowerCase()) || 
-                text.toLowerCase().includes(law.code.toLowerCase()) ||
-                text.toLowerCase().includes(law.section.toLowerCase())
-            );
-
-            let contextText = "";
-            if (matchedLaws.length > 0) {
-                contextText = "\n\nRelevant Local Indian Law Statutes (Offline DB):\n" + 
-                    matchedLaws.map(l => `- ${l.section} (${l.title}): ${l.desc}`).join("\n");
-            }
-
-            const fullPrompt = `${systemPrompt}${contextText}\n\nClient Case Query: ${text}`;
-
-            try {
-                let replyText = "";
-
-                if (!apiKey) {
-                    replyText = generateLawyerResponse(text, matchedLaws) + "\n\n*(Note: Running in offline fallback mode. Enter your API key in Settings for live internet search.)*";
-                } else {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        contents: [{ parts: [{ text: fullPrompt }] }]
-    })
-});              method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: fullPrompt }] }]
-                        })
-                    });
-
-                    const data = await response.json();
-                    if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-                        replyText = data.candidates[0].content.parts[0].text;
-                    } else if (data.error) {
-                        replyText = "API Error: " + data.error.message;
-                    } else {
-                        replyText = generateLawyerResponse(text, matchedLaws);
-                    }
-                }
-
-                appendMessage('ai', replyText);
-
-                speakText("Analysis complete. And done!", () => {
-                    setMascotState('done');
-                    setTimeout(() => setMascotState('ready'), 3000);
-                });
-
-            } catch (err) {
-                setMascotState('ready');
-                appendMessage('ai', "Network/API Error: " + err.message);
-            }
-        }
-
-        // --- LAW BOOK SEARCH LOGIC ---
-        function onCountryChange() {
-            const country = document.getElementById('country-select').value;
-            const badge = document.getElementById('mode-badge');
-            if (country === 'IN') {
-                badge.innerText = "OFFLINE: IND LAW";
-                badge.style.borderColor = "var(--border-color)";
-            } else {
-                badge.innerText = `ONLINE: ${country} LIVE SEARCH`;
-                badge.style.borderColor = "var(--accent-color)";
-            }
-        }
-
-        function searchLaw() {
-            const query = document.getElementById('law-search-input').value.trim().toLowerCase();
-            const country = document.getElementById('country-select').value;
-            const resultsContainer = document.getElementById('law-results');
-
-            resultsContainer.innerHTML = '';
-
-            if (country === 'IN') {
-                const results = LOCAL_INDIAN_LAW.filter(l => 
-                    l.section.toLowerCase().includes(query) || 
-                    l.title.toLowerCase().includes(query) || 
-                    l.desc.toLowerCase().includes(query)
+                // Keyword matching against local database
+                const matches = LOCAL_INDIAN_LAW.filter(law => 
+                    lower.includes(law.title.toLowerCase()) || 
+                    lower.includes(law.code.toLowerCase()) ||
+                    lower.includes(law.section.toLowerCase()) ||
+                    lower.includes('theft') && law.title.toLowerCase().includes('theft') ||
+                    lower.includes('murder') && law.title.toLowerCase().includes('murder') ||
+                    lower.includes('cheating') && law.title.toLowerCase().includes('cheating') ||
+                    lower.includes('article 21') && law.section.toLowerCase().includes('article 21')
                 );
 
-                if (results.length === 0) {
-                    resultsContainer.innerHTML = `<div class="law-card">No local statutes found matching "${query}".</div>`;
-                    return;
+                if (matches.length > 0) {
+                    reply = `### Statutory Legal Analysis:\n\n`;
+                    matches.forEach(m => {
+                        reply += `**${m.section} - ${m.title}** (${m.code}):\n${m.desc}\n\n`;
+                    });
+                    reply += `*Strategy Recommendation:* Evaluate evidence standards carefully under the Bharatiya Sakshya Adhiniyam (BSA).`;
+                } else if (lower.includes('hi') || lower.includes('hello')) {
+                    reply = "Hello! I am your offline Indian Law Assistant. You can ask me about **theft**, **murder**, **cheating**, or **Article 21**!";
+                } else {
+                    reply = `### Case Evaluation for: "${text}"\n\n**1. Legal Assessment:** Under Indian penal jurisprudence (BNS / Constitution), this matter requires evaluating intent (mens rea) and statutory burdens of proof.\n\n**2. Recommended Defense/Action:** Gather documentary evidence and consult relevant statutory sections in the Law Book module.`;
                 }
 
-                results.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'law-card';
-                    card.innerHTML = `
-                        <div class="law-card-title">${item.section} - ${item.title}</div>
-                        <div class="law-card-meta">Jurisdiction: India | Code: ${item.code} | Offline Status: Synchronized</div>
-                        <div class="law-card-desc">${item.desc}</div>
-                    `;
-                    resultsContainer.appendChild(card);
-                });
-            } else {
-                resultsContainer.innerHTML = `
-                    <div class="law-card">
-                        <div class="law-card-title">Live Query Result: ${query.toUpperCase() || 'GENERAL CODES'}</div>
-                        <div class="law-card-meta">Jurisdiction: ${country} | Online API Live Search</div>
-                        <div class="law-card-desc">Connected to international legal statutory database for ${country}. Relevant precedents, acts, and statutory provisions retrieved successfully.</div>
-                    </div>
-                `;
+                saveMessageToCurrentSession('ai', reply);
+                appendMessageToUI('ai', reply);
+                speakText(reply);
+                setMascotState('ready');
+            }, 300);
+        }
+
+        // --- LAW BOOK SEARCH ---
+        function searchLaw() {
+            const query = document.getElementById('law-search-input').value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('law-results');
+            resultsContainer.innerHTML = '';
+
+            const results = LOCAL_INDIAN_LAW.filter(l => 
+                l.section.toLowerCase().includes(query) || 
+                l.title.toLowerCase().includes(query) || 
+                l.desc.toLowerCase().includes(query)
+            );
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `<div class="law-card"><div class="law-card-title">No local statutes found matching "${query}". Try searching 'theft', 'murder', 'cheating', or 'Article 21'.</div></div>`;
+                return;
             }
+
+            results.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'law-card';
+                card.innerHTML = `
+                    <div class="law-card-title">${item.section} - ${item.title}</div>
+                    <div class="law-card-meta">Jurisdiction: India | Code: ${item.code} | Status: Secure Offline Cache</div>
+                    <div class="law-card-desc">${item.desc}</div>
+                `;
+                resultsContainer.appendChild(card);
+            });
         }
     </script>
 </body>
