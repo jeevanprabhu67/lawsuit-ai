@@ -516,7 +516,7 @@
     <header>
         <div class="title">
             <span>[LEX-AGENT AI]</span>
-            <span class="badge" id="mode-badge">ONLINE GEMINI MODE</span>
+            <span class="badge" id="mode-badge">100% ONLINE GEMINI</span>
         </div>
         <div>
             <span id="sys-clock">00:00:00</span>
@@ -585,7 +585,7 @@
                 <div class="chat-main">
                     <div class="chat-history" id="chat-history">
                         <div class="chat-message ai">
-                            <strong>[M.I. HONEST LAWYER]:</strong> Hello! Configure your API key in Settings to begin chatting with live online Gemini intelligence.
+                            <strong>[M.I. HONEST LAWYER]:</strong> Hello! Make sure your Gemini API key is saved in Settings to chat online.
                         </div>
                     </div>
                     <div class="chat-input-area">
@@ -620,7 +620,7 @@
                         <input type="password" id="api-key-input" class="setting-input" placeholder="Paste your Gemini API key here..." style="flex: 1;">
                         <button class="toggle-btn" onclick="saveApiKey()">SAVE KEY</button>
                     </div>
-                    <div style="font-size: 0.8rem; color: var(--text-dim);">Connects directly to the live Gemini API.</div>
+                    <div style="font-size: 0.8rem; color: var(--text-dim);">Required to connect directly to the live Gemini API.</div>
                 </div>
 
                 <div class="setting-group">
@@ -649,7 +649,7 @@
                 </div>
                 <div class="law-results" id="law-results">
                     <div class="law-card">
-                        <div class="law-card-title">Select jurisdiction and enter search terms to query legal statutes via Gemini.</div>
+                        <div class="law-card-title">Select jurisdiction and enter search terms to query legal statutes via Gemini online.</div>
                     </div>
                 </div>
             </div>
@@ -702,7 +702,7 @@
             sessions[currentSessionId] = {
                 title: "New Legal Inquiry",
                 messages: [
-                    { sender: 'ai', text: 'Hello! I am your Indian Law Assistant powered by Gemini. Ask me anything!' }
+                    { sender: 'ai', text: 'Hello! I am your online Indian Law Assistant powered by Gemini. Ask me anything!' }
                 ]
             };
             
@@ -980,7 +980,7 @@
 
             if (!query) return;
 
-            resultsContainer.innerHTML = `<div class="law-card"><div class="law-card-title">Querying statutes via Gemini...</div></div>`;
+            resultsContainer.innerHTML = `<div class="law-card"><div class="law-card-title">Querying statutes via Gemini online...</div></div>`;
 
             if (!apiKey) {
                 resultsContainer.innerHTML = `<div class="law-card"><div class="law-card-title">Please enter your Gemini API key in Settings to search live statutes.</div></div>`;
