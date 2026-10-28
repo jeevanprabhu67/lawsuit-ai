@@ -91,9 +91,9 @@
             overflow: hidden;
         }
 
-        /* Views / Interfaces */
+        /* Fixed View Switching Logic */
         .view {
-            display: none;
+            display: none !important;
             width: 100%;
             height: 100%;
             opacity: 0;
@@ -103,7 +103,7 @@
         }
 
         .view.active {
-            display: flex;
+            display: flex !important;
             opacity: 1;
             transform: scale(1);
             animation: fadeIn 0.4s ease forwards;
@@ -167,7 +167,7 @@
             fill: currentColor;
         }
 
-        /* Navigation Header for Sub-Interfaces */
+        /* Navigation Header */
         .sub-nav {
             display: flex;
             justify-content: space-between;
@@ -482,7 +482,6 @@
                 <button class="btn-exit" onclick="navigateTo('hub-view')">[EXIT CHAT]</button>
             </div>
             <div class="chat-container">
-                <!-- Claude-style Mini Interactive Mascot Panel -->
                 <div class="mascot-panel">
                     <div class="mascot-avatar" id="mascot-avatar">
                         <svg viewBox="0 0 100 100" width="100%" height="100%">
@@ -501,7 +500,6 @@
                     </div>
                 </div>
 
-                <!-- Main Chat Window -->
                 <div class="chat-main">
                     <div class="chat-history" id="chat-history">
                         <div class="chat-message ai">
@@ -582,6 +580,18 @@
     </main>
 
     <script>
+        // --- NAVIGATION CONTROLLER ---
+        function navigateTo(viewId) {
+            const views = document.querySelectorAll('.view');
+            views.forEach(v => {
+                v.classList.remove('active');
+            });
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.classList.add('active');
+            }
+        }
+
         // --- LOCAL DATABASE (INDIAN LAW) ---
         const LOCAL_INDIAN_LAW = [
             {
@@ -643,12 +653,6 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // Navigation
-        function navigateTo(viewId) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-        }
-
         // Clock
         function updateClock() {
             const now = new Date();
@@ -667,7 +671,7 @@
             }
         }
 
-        // --- API KEY & HISTORY STORAGE ---
+        // API Key Storage & Chat Initialization
         window.addEventListener('DOMContentLoaded', () => {
             const savedKey = localStorage.getItem('lex_gemini_api_key');
             if (savedKey) {
@@ -693,7 +697,7 @@
             alert('API Key saved successfully to browser storage!');
         }
 
-        // --- INTERACTIVE BOT ANIMATION STATES ---
+        // --- MASCOT ANIMATION STATES ---
         function setMascotState(state) {
             const avatarContainer = document.getElementById('mascot-avatar');
             const statusText = document.getElementById('mascot-status');
@@ -743,6 +747,7 @@
             }
         }
 
+        // Append Chat Messages with Auto-Scroll
         function appendMessage(sender, text, save = true) {
             const chatHistory = document.getElementById('chat-history');
             const msg = document.createElement('div');
@@ -764,7 +769,7 @@
             }
         }
 
-        // --- OFFLINE FALLBACK LAWYER RESPONSE ---
+        // Offline Fallback Response
         function generateLawyerResponse(query, matches) {
             let res = `### Legal Analysis & Trial Strategy\n\n`;
             res += `**1. Objective Case Assessment:**\nBased on your statement, we need to analyze both prosecution strength and statutory defense options.\n\n`;
@@ -787,7 +792,7 @@
             return res;
         }
 
-        // --- ASYNC CHAT MESSAGE & API WORKFLOW ---
+        // Chat Message Workflow
         async function sendMessage() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
@@ -798,8 +803,7 @@
 
             setMascotState('working');
 
-            const premadeDefaultKey = ""; // Paste default key here if desired
-            const apiKey = localStorage.getItem('lex_gemini_api_key') || premadeDefaultKey;
+            const apiKey = localStorage.getItem('lex_gemini_api_key');
             const systemPrompt = document.getElementById('system-prompt').value;
 
             const matchedLaws = LOCAL_INDIAN_LAW.filter(law => 
@@ -854,7 +858,7 @@
             }
         }
 
-        // --- LAW BOOK SEARCH LOGIC ---
+        // Law Search
         function onCountryChange() {
             const country = document.getElementById('country-select').value;
             const badge = document.getElementById('mode-badge');
