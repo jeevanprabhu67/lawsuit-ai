@@ -509,16 +509,6 @@
             color: var(--text-dim);
             margin-bottom: 10px;
         }
-
-        .download-banner {
-            background: rgba(0, 255, 255, 0.08);
-            border: 1px dashed var(--accent-color);
-            padding: 12px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
     </style>
 </head>
 <body>
@@ -526,7 +516,7 @@
     <header>
         <div class="title">
             <span>[LEX-AGENT AI]</span>
-            <span class="badge" id="mode-badge">HYBRID MODE READY</span>
+            <span class="badge" id="mode-badge">ONLINE GEMINI MODE</span>
         </div>
         <div>
             <span id="sys-clock">00:00:00</span>
@@ -595,11 +585,11 @@
                 <div class="chat-main">
                     <div class="chat-history" id="chat-history">
                         <div class="chat-message ai">
-                            <strong>[M.I. HONEST LAWYER]:</strong> Hello! Configure your API key in Settings for live Gemini mode, or chat offline using cached Indian law statutes.
+                            <strong>[M.I. HONEST LAWYER]:</strong> Hello! Configure your API key in Settings to begin chatting with live online Gemini intelligence.
                         </div>
                     </div>
                     <div class="chat-input-area">
-                        <input type="text" id="chat-input" class="chat-input" placeholder="Type a legal question or chat message..." onkeydown="if(event.key === 'Enter') sendMessage()">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Type your legal question here..." onkeydown="if(event.key === 'Enter') sendMessage()">
                         <button class="btn-send" onclick="sendMessage()">SEND</button>
                     </div>
                 </div>
@@ -625,26 +615,17 @@
                 </div>
 
                 <div class="setting-group">
-                    <label class="setting-label">GEMINI API KEY (FOR ONLINE AI & WEB ACCESS)</label>
+                    <label class="setting-label">GEMINI API KEY (REQUIRED FOR ONLINE MODE)</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="password" id="api-key-input" class="setting-input" placeholder="Paste your Gemini API key here..." style="flex: 1;">
                         <button class="toggle-btn" onclick="saveApiKey()">SAVE KEY</button>
                     </div>
-                    <div style="font-size: 0.8rem; color: var(--text-dim);">Enables live Gemini AI when online. If offline or no key is provided, the app automatically falls back to cached Indian law.</div>
+                    <div style="font-size: 0.8rem; color: var(--text-dim);">Connects directly to the live Gemini API.</div>
                 </div>
 
                 <div class="setting-group">
                     <label class="setting-label">AI ASSISTANT PERSONALITY & SYSTEM PROMPT</label>
                     <textarea id="system-prompt" class="setting-input">You are M.I. Bot, an expert AI legal assistant specializing in Indian Law (including BNS 2023, BNSS, BSA, Constitution of India, and IPC/CrPC). Answer questions naturally, accurately, and thoroughly without rigid robotic headers.</textarea>
-                </div>
-
-                <div class="setting-group">
-                    <label class="setting-label">DATABASE SYNC STATUS</label>
-                    <div style="font-size: 0.9rem; color: var(--text-dim);" id="db-sync-status">
-                        • Indian Penal Code & BNS 2023 [OFFLINE CACHED]<br>
-                        • Code of Criminal Procedure / BNSS [OFFLINE CACHED]<br>
-                        • Constitution of India [OFFLINE CACHED]
-                    </div>
                 </div>
             </div>
         </div>
@@ -656,28 +637,19 @@
                 <button class="btn-exit" onclick="navigateTo('hub-view')">[EXIT LAW BOOK]</button>
             </div>
             <div class="law-container">
-                <!-- Download Offline Database Banner -->
-                <div class="download-banner">
-                    <div>
-                        <strong style="color: var(--accent-color);">OFFLINE LEGAL PACK:</strong> Download full statutory database for offline expo usage.
-                    </div>
-                    <button class="toggle-btn" onclick="downloadOfflineDatabase()" style="background: var(--accent-color); color: var(--bg-color);">DOWNLOAD PACKAGE</button>
-                </div>
-
                 <div class="law-controls">
                     <select id="country-select" onchange="onCountryChange()">
-                        <option value="IN">India (Offline / Web Database)</option>
-                        <option value="US">United States (Web Search)</option>
-                        <option value="UK">United Kingdom (Web Search)</option>
-                        <option value="INT">International Law (Web Search)</option>
+                        <option value="IN">India (Online Legal Index)</option>
+                        <option value="US">United States</option>
+                        <option value="UK">United Kingdom</option>
+                        <option value="INT">International Law</option>
                     </select>
                     <input type="text" id="law-search-input" class="chat-input search-input" placeholder="Search section, article, keyword..." onkeydown="if(event.key==='Enter') searchLaw()">
                     <button class="btn-send" onclick="searchLaw()">SEARCH</button>
                 </div>
                 <div class="law-results" id="law-results">
                     <div class="law-card">
-                        <div class="law-card-title">Select a jurisdiction and enter search terms to query legal statutes.</div>
-                        <div class="law-card-meta">Click 'Download Package' above to sync offline bundles. Gemini web access activates automatically when online.</div>
+                        <div class="law-card-title">Select jurisdiction and enter search terms to query legal statutes via Gemini.</div>
                     </div>
                 </div>
             </div>
@@ -696,52 +668,6 @@
                 targetView.classList.add('active');
             }
         }
-
-        // --- LOCAL DATABASE (INDIAN LAW) ---
-        const LOCAL_INDIAN_LAW = [
-            {
-                section: "BNS Section 103 (IPC 302)",
-                title: "Punishment for Murder",
-                code: "BNS / IPC",
-                desc: "Whoever commits murder shall be punished with death or imprisonment for life, and shall also be liable to fine."
-            },
-            {
-                section: "BNS Section 303 (IPC 378/379)",
-                title: "Theft",
-                code: "BNS / IPC",
-                desc: "Whoever, intending to take dishonestly any movable property out of the possession of any person without that person's consent, moves that property, commits theft."
-            },
-            {
-                section: "BNS Section 318 (IPC 420)",
-                title: "Cheating and dishonestly inducing delivery of property",
-                code: "BNS / IPC",
-                desc: "Whoever cheats and thereby dishonestly induces the person deceived to deliver any property shall be punished with imprisonment up to 7 years and fine."
-            },
-            {
-                section: "Article 21",
-                title: "Protection of Life and Personal Liberty",
-                code: "Constitution of India",
-                desc: "No person shall be deprived of his life or personal liberty except according to procedure established by law."
-            },
-            {
-                section: "Article 14",
-                title: "Equality before Law",
-                code: "Constitution of India",
-                desc: "The State shall not deny to any person equality before the law or the equal protection of the laws within the territory of India."
-            },
-            {
-                section: "BNSS Section 35 (CrPC 41)",
-                title: "When Police may arrest without warrant",
-                code: "BNSS / CrPC",
-                desc: "Outlines conditions under which a police officer may arrest any person without an order from a Magistrate and without a warrant."
-            },
-            {
-                section: "BSA Section 45 (Evidence Act Sec 45)",
-                title: "Opinions of Experts",
-                code: "BSA / Evidence Act",
-                desc: "When the Court has to form an opinion upon a point of foreign law or of science or art, or identity of handwriting, the opinions of experts are relevant facts."
-            }
-        ];
 
         // --- CHAT LIBRARY / ARCHIVE MANAGEMENT ---
         let currentSessionId = null;
@@ -776,7 +702,7 @@
             sessions[currentSessionId] = {
                 title: "New Legal Inquiry",
                 messages: [
-                    { sender: 'ai', text: 'Hello! I am your Indian Law Assistant. Ask me anything online via Gemini or offline via statutory records.' }
+                    { sender: 'ai', text: 'Hello! I am your Indian Law Assistant powered by Gemini. Ask me anything!' }
                 ]
             };
             
@@ -829,25 +755,6 @@
             sessions[currentSessionId].messages.push({ sender, text });
             localStorage.setItem('lex_chat_sessions', JSON.stringify(sessions));
             loadChatSessions();
-        }
-
-        // --- DOWNLOAD OFFLINE DATABASE FEATURE ---
-        function downloadOfflineDatabase() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(LOCAL_INDIAN_LAW, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "lex_agent_offline_statutes.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-
-            localStorage.setItem('lex_offline_downloaded', 'true');
-            document.getElementById('db-sync-status').innerHTML = `
-                • Indian Penal Code & BNS 2023 [DOWNLOADED & LOCAL CACHE ACTIVE]<br>
-                • Code of Criminal Procedure / BNSS [DOWNLOADED & LOCAL CACHE ACTIVE]<br>
-                • Constitution of India [DOWNLOADED & LOCAL CACHE ACTIVE]
-            `;
-            alert('Offline database package downloaded successfully and synced to browser storage!');
         }
 
         // --- VOICE SYNTHESIS CONTROLLER & TOGGLE ---
@@ -906,7 +813,6 @@
             if (savedKey) {
                 const inputElem = document.getElementById('api-key-input');
                 if (inputElem) inputElem.value = savedKey;
-                document.getElementById('mode-badge').innerText = "ONLINE GEMINI READY";
             }
 
             const savedVoice = localStorage.getItem('lex_voice_enabled');
@@ -917,14 +823,6 @@
                     btn.innerText = voiceEnabled ? "VOICE: ENABLED" : "VOICE: MUTED";
                     btn.style.borderColor = voiceEnabled ? "var(--border-color)" : "var(--alert-color)";
                 }
-            }
-
-            if (localStorage.getItem('lex_offline_downloaded') === 'true') {
-                document.getElementById('db-sync-status').innerHTML = `
-                    • Indian Penal Code & BNS 2023 [DOWNLOADED & LOCAL CACHE ACTIVE]<br>
-                    • Code of Criminal Procedure / BNSS [DOWNLOADED & LOCAL CACHE ACTIVE]<br>
-                    • Constitution of India [DOWNLOADED & LOCAL CACHE ACTIVE]
-                `;
             }
 
             const sessions = JSON.parse(localStorage.getItem('lex_chat_sessions') || '{}');
@@ -943,7 +841,6 @@
             if (!keyInput) return;
             const key = keyInput.value.trim();
             localStorage.setItem('lex_gemini_api_key', key);
-            document.getElementById('mode-badge').innerText = "ONLINE GEMINI READY";
             alert('API Key saved successfully! Online mode activated.');
         }
 
@@ -997,7 +894,6 @@
             }
         }
 
-        // Append to DOM and save to library session
         function appendMessageToUI(sender, text) {
             const chatHistory = document.getElementById('chat-history');
             const msg = document.createElement('div');
@@ -1011,37 +907,7 @@
             }, 50);
         }
 
-        // --- ROBUST OFFLINE FALLBACK ENGINE ---
-        function getOfflineFallbackResponse(query) {
-            const lower = query.toLowerCase();
-            if (lower.includes('wassup') || lower.includes('yo') || lower.includes('sup') || lower.includes('hey')) {
-                return "Not much! Running offline on cached Indian law statutes. What's on your mind?";
-            }
-            if (lower.includes('hi') || lower.includes('hello')) {
-                return "Hello! I am operating in offline fallback mode. How can I help you?";
-            }
-
-            const matchedLaws = LOCAL_INDIAN_LAW.filter(law => 
-                lower.includes(law.title.toLowerCase()) || 
-                lower.includes(law.code.toLowerCase()) ||
-                lower.includes(law.section.toLowerCase()) ||
-                (lower.includes('murder') && law.title.toLowerCase().includes('murder')) ||
-                (lower.includes('theft') && law.title.toLowerCase().includes('theft')) ||
-                (lower.includes('cheating') && law.title.toLowerCase().includes('cheating'))
-            );
-
-            if (matchedLaws.length > 0) {
-                let res = "### Offline Statutory Match:\n\n";
-                matchedLaws.forEach(m => {
-                    res += `**${m.section} - ${m.title}** (${m.code}):\n${m.desc}\n\n`;
-                });
-                return res.trim();
-            }
-
-            return `[OFFLINE FALLBACK]: No Gemini API key detected or network unavailable. I can answer queries based on cached Indian law statutes (like theft, murder, cheating, Article 21). To use full online intelligence, configure your API key in Settings!`;
-        }
-
-        // --- HYBRID WORKFLOW: GEMINI API ONLINE + AUTOMATIC OFFLINE FALLBACK ---
+        // --- 100% ONLINE GEMINI API WORKFLOW ---
         async function sendMessage() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
@@ -1057,101 +923,95 @@
             const systemPrompt = document.getElementById('system-prompt').value;
             const fullPrompt = `${systemPrompt}\n\nUser Query: ${text}`;
 
-            // --- STEP 1: ATTEMPT ONLINE GEMINI API CALL IF KEY EXISTS ---
-            if (apiKey && apiKey.trim() !== "") {
-                try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: fullPrompt }] }]
-                        })
-                    });
-
-                    const data = await response.json();
-                    if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-                        const onlineReply = data.candidates[0].content.parts[0].text;
-                        
-                        saveMessageToCurrentSession('ai', onlineReply);
-                        appendMessageToUI('ai', onlineReply);
-                        
-                        speakText(onlineReply, () => {
-                            setMascotState('done');
-                            setTimeout(() => setMascotState('ready'), 3000);
-                        });
-                        return; 
-                    } else {
-                        console.warn("API response format error, falling back to offline.");
-                    }
-                } catch (e) {
-                    console.warn("Network request failed, falling back to local database.");
-                }
+            if (!apiKey || apiKey.trim() === "") {
+                const errorMsg = "⚠️ **[API KEY REQUIRED]**: Please go to **[2] SETTINGS**, enter your Gemini API key, and click **[SAVE KEY]** to use online mode.";
+                saveMessageToCurrentSession('ai', errorMsg);
+                appendMessageToUI('ai', errorMsg);
+                setMascotState('ready');
+                return;
             }
 
-            // --- STEP 2: AUTOMATIC OFFLINE FALLBACK ---
-            setTimeout(() => {
-                const offlineReply = getOfflineFallbackResponse(text);
-                
-                saveMessageToCurrentSession('ai', offlineReply);
-                appendMessageToUI('ai', offlineReply);
-
-                speakText(offlineReply, () => {
-                    setMascotState('done');
-                    setTimeout(() => setMascotState('ready'), 3000);
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': apiKey.trim()
+                    },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: fullPrompt }] }]
+                    })
                 });
-            }, 400);
-        }
 
-        // --- LAW BOOK SEARCH LOGIC ---
-        function onCountryChange() {
-            const country = document.getElementById('country-select').value;
-            const badge = document.getElementById('mode-badge');
-            if (country === 'IN') {
-                badge.innerText = "OFFLINE/WEB: IND LAW";
-                badge.style.borderColor = "var(--border-color)";
-            } else {
-                badge.innerText = `WEB ACCESS: ${country} JURISDICTION`;
-                badge.style.borderColor = "var(--accent-color)";
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+                    const onlineReply = data.candidates[0].content.parts[0].text;
+                    
+                    saveMessageToCurrentSession('ai', onlineReply);
+                    appendMessageToUI('ai', onlineReply);
+                    
+                    speakText(onlineReply, () => {
+                        setMascotState('done');
+                        setTimeout(() => setMascotState('ready'), 3000);
+                    });
+                } else {
+                    console.error("Gemini Error:", data);
+                    const errorReply = "⚠️ **[API ERROR]**: Invalid API response received. Check your API key.";
+                    saveMessageToCurrentSession('ai', errorReply);
+                    appendMessageToUI('ai', errorReply);
+                    setMascotState('ready');
+                }
+            } catch (e) {
+                console.error("Fetch Network Error:", e);
+                const netError = "⚠️ **[NETWORK ERROR]**: Could not connect to Gemini servers. Check your internet connection.";
+                saveMessageToCurrentSession('ai', netError);
+                appendMessageToUI('ai', netError);
+                setMascotState('ready');
             }
         }
 
-        function searchLaw() {
-            const query = document.getElementById('law-search-input').value.trim().toLowerCase();
+        // --- LAW BOOK SEARCH LOGIC (VIA GEMINI) ---
+        async function searchLaw() {
+            const query = document.getElementById('law-search-input').value.trim();
             const country = document.getElementById('country-select').value;
             const resultsContainer = document.getElementById('law-results');
+            const apiKey = localStorage.getItem('lex_gemini_api_key');
 
-            resultsContainer.innerHTML = '';
+            if (!query) return;
 
-            if (country === 'IN') {
-                const results = LOCAL_INDIAN_LAW.filter(l => 
-                    l.section.toLowerCase().includes(query) || 
-                    l.title.toLowerCase().includes(query) || 
-                    l.desc.toLowerCase().includes(query)
-                );
+            resultsContainer.innerHTML = `<div class="law-card"><div class="law-card-title">Querying statutes via Gemini...</div></div>`;
 
-                if (results.length === 0) {
-                    resultsContainer.innerHTML = `<div class="law-card">No local statutes found matching "${query}". Try searching 'murder', 'theft', 'cheating', or 'Article 21'.</div>`;
-                    return;
-                }
+            if (!apiKey) {
+                resultsContainer.innerHTML = `<div class="law-card"><div class="law-card-title">Please enter your Gemini API key in Settings to search live statutes.</div></div>`;
+                return;
+            }
 
-                results.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'law-card';
-                    card.innerHTML = `
-                        <div class="law-card-title">${item.section} - ${item.title}</div>
-                        <div class="law-card-meta">Jurisdiction: India | Code: ${item.code} | Sync Status: Offline Package Downloaded</div>
-                        <div class="law-card-desc">${item.desc}</div>
-                    `;
-                    resultsContainer.appendChild(card);
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': apiKey.trim()
+                    },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Provide statutory details, sections, and legal provisions for "${query}" under jurisdiction: ${country}` }] }]
+                    })
                 });
-            } else {
-                resultsContainer.innerHTML = `
-                    <div class="law-card">
-                        <div class="law-card-title">Web Search Result: ${query.toUpperCase() || 'GENERAL STATUTES'}</div>
-                        <div class="law-card-meta">Jurisdiction: ${country} | Web Access Search Index</div>
-                        <div class="law-card-desc">Connected to live international legal statutes for ${country}. Relevant acts, precedents, and cross-border codes retrieved successfully via web query.</div>
-                    </div>
-                `;
+
+                const data = await response.json();
+                if (data.candidates && data.candidates[0].content) {
+                    const resultText = data.candidates[0].content.parts[0].text;
+                    resultsContainer.innerHTML = `
+                        <div class="law-card">
+                            <div class="law-card-title">Search Result: ${query}</div>
+                            <div class="law-card-meta">Jurisdiction: ${country} | Source: Gemini Live Legal Engine</div>
+                            <div class="law-card-desc">${marked.parse(resultText)}</div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                resultsContainer.innerHTML = `<div class="law-card"><div class="law-card-title">Failed to query statutes online. Check network connection.</div></div>`;
             }
         }
     </script>
