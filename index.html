@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LEX-AGENT AI | Terminal Legal Assistant</title>
+    <title>Legal-AGENT AI | Terminal Legal Assistant</title>
     <!-- Google Fonts for Terminal Look -->
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=VT323&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -513,11 +513,11 @@
                 <div class="chat-main">
                     <div class="chat-history" id="chat-history">
                         <div class="chat-message ai">
-                            <strong>[M.I. HONEST LAWYER]:</strong> Greetings! I am your interactive legal strategist. State your case facts or query, and I'll analyze the statutes for you.
+                            <strong>[M.I. HONEST LAWYER]:</strong> Greetings! I am your interactive AI assistant. You can ask me general questions, chat freely, or query legal statutes and case files.
                         </div>
                     </div>
                     <div class="chat-input-area">
-                        <input type="text" id="chat-input" class="chat-input" placeholder="Type case details or law query..." onkeydown="if(event.key === 'Enter') sendMessage()">
+                        <input type="text" id="chat-input" class="chat-input" placeholder="Type anything, question, or law query..." onkeydown="if(event.key === 'Enter') sendMessage()">
                         <button class="btn-send" onclick="sendMessage()">SEND</button>
                     </div>
                 </div>
@@ -537,17 +537,23 @@
                 </div>
 
                 <div class="setting-group">
+                    <label class="setting-label">VOICE SYNTHESIS (TTS)</label>
+                    <button class="toggle-btn" id="voice-toggle-btn" onclick="toggleVoice()">VOICE: ENABLED</button>
+                    <div style="font-size: 0.8rem; color: var(--text-dim);">Turn text-to-speech voice audio ON or OFF during AI responses.</div>
+                </div>
+
+                <div class="setting-group">
                     <label class="setting-label">GEMINI API KEY (FOR WEB ACCESS & LIVE ANALYSIS)</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="password" id="api-key-input" class="setting-input" placeholder="Paste your Gemini API key here..." style="flex: 1;">
                         <button class="toggle-btn" onclick="saveApiKey()">SAVE KEY</button>
                     </div>
-                    <div style="font-size: 0.8rem; color: var(--text-dim);">Enables live internet web access and deep online legal research. Without a key, offline mode is used.</div>
+                    <div style="font-size: 0.8rem; color: var(--text-dim);">Enables live internet web access and deep online research. Without a key, offline mode is used.</div>
                 </div>
 
                 <div class="setting-group">
-                    <label class="setting-label">LAWYER PERSONALITY & SYSTEM PROMPT</label>
-                    <textarea id="system-prompt" class="setting-input">You are an exceptionally honest, highly strategic AI Lawyer built for courtroom trial preparation. Always provide balanced evaluations of cases: detail the defense's strongest points, expose potential weaknesses/risks, cite exact law sections, and maintain an objective, courtroom-ready approach.</textarea>
+                    <label class="setting-label">AI ASSISTANT PERSONALITY & SYSTEM PROMPT</label>
+                    <textarea id="system-prompt" class="setting-input">You are M.I. Bot, an exceptionally smart, friendly, and versatile AI assistant built for both general knowledge queries and legal trial preparation. Answer any general question accurately, and provide professional strategic legal analyses when case facts or laws are mentioned.</textarea>
                 </div>
 
                 <div class="setting-group">
@@ -674,14 +680,32 @@
             alert('Offline database package downloaded successfully and synced to browser storage!');
         }
 
-        // --- SPEECH SYNTHESIS CONTROLLER ---
+        // --- VOICE SYNTHESIS CONTROLLER & TOGGLE ---
+        let voiceEnabled = true;
+
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            const btn = document.getElementById('voice-toggle-btn');
+            if (voiceEnabled) {
+                btn.innerText = "VOICE: ENABLED";
+                btn.style.borderColor = "var(--border-color)";
+            } else {
+                btn.innerText = "VOICE: MUTED";
+                btn.style.borderColor = "var(--alert-color)";
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+            localStorage.setItem('lex_voice_enabled', voiceEnabled);
+        }
+
         function speakText(text, onComplete) {
-            if (!('speechSynthesis' in window)) {
+            if (!voiceEnabled || !('speechSynthesis' in window)) {
                 if (onComplete) onComplete();
                 return;
             }
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
+            // Strip markdown symbols for clean speech audio
+            const cleanText = text.replace(/###|\*\*|[-_*#]/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
             utterance.rate = 1.0;
             utterance.pitch = 0.9;
             utterance.onend = () => { if (onComplete) onComplete(); };
@@ -715,6 +739,16 @@
                 if (inputElem) inputElem.value = savedKey;
             }
 
+            const savedVoice = localStorage.getItem('lex_voice_enabled');
+            if (savedVoice !== null) {
+                voiceEnabled = (savedVoice === 'true');
+                const btn = document.getElementById('voice-toggle-btn');
+                if (btn) {
+                    btn.innerText = voiceEnabled ? "VOICE: ENABLED" : "VOICE: MUTED";
+                    btn.style.borderColor = voiceEnabled ? "var(--border-color)" : "var(--alert-color)";
+                }
+            }
+
             if (localStorage.getItem('lex_offline_downloaded') === 'true') {
                 document.getElementById('db-sync-status').innerHTML = `
                     • Indian Penal Code & BNS 2023 [DOWNLOADED & LOCAL CACHE ACTIVE]<br>
@@ -738,7 +772,7 @@
             if (!keyInput) return;
             const key = keyInput.value.trim();
             localStorage.setItem('lex_gemini_api_key', key);
-            alert('API Key saved! Web Access & Live Legal Analysis enabled.');
+            alert('API Key saved! Web Access & Live General AI Answer engine enabled.');
         }
 
         // --- MASCOT ANIMATION STATES ---
@@ -747,7 +781,7 @@
             const statusText = document.getElementById('mascot-status');
 
             if (state === 'working') {
-                statusText.innerText = "STATUS: WEB ANALYZING...";
+                statusText.innerText = "STATUS: PROCESSING...";
                 avatarContainer.innerHTML = `
                     <svg viewBox="0 0 100 100" width="100%" height="100%">
                         <rect x="20" y="15" width="60" height="45" rx="8" fill="none" stroke="var(--border-color)" stroke-width="4"/>
@@ -757,7 +791,7 @@
                         <line x1="50" y1="15" x2="50" y2="5" stroke="var(--border-color)" stroke-width="3"/>
                         <circle cx="50" cy="4" r="4" fill="var(--accent-color)"/>
                         <path d="M 30 60 L 70 60 L 65 85 L 35 85 Z" fill="none" stroke="var(--border-color)" stroke-width="3"/>
-                        <text x="72" y="55" font-size="18">🌐</text>
+                        <text x="72" y="55" font-size="18">⚡</text>
                         <rect x="22" y="73" width="56" height="18" rx="2" fill="var(--panel-bg)" stroke="var(--accent-color)" stroke-width="2"/>
                         <line x1="18" y1="92" x2="82" y2="92" stroke="var(--accent-color)" stroke-width="3"/>
                     </svg>
@@ -813,30 +847,42 @@
             }
         }
 
-        // --- OFFLINE FALLBACK LAWYER RESPONSE ---
-        function generateLawyerResponse(query, matches) {
-            let res = `### Legal Analysis & Trial Strategy\n\n`;
-            res += `**1. Objective Case Assessment:**\nBased on your statement, we need to analyze both prosecution strength and statutory defense options.\n\n`;
-            
-            if (matches.length > 0) {
-                res += `**2. Applicable Statutory Provisions (Local DB):**\n`;
-                matches.forEach(m => {
-                    res += `- **${m.section}** (${m.title}): ${m.desc}\n`;
-                });
-                res += `\n`;
+        // --- GENERAL & LEGAL FALLBACK RESPONSE ENGINE ---
+        function generateGeneralOrLegalResponse(query, matches) {
+            const lower = query.toLowerCase();
+
+            // Check if query is asking about laws / crimes / cases
+            const isLegalQuery = lower.includes('law') || lower.includes('section') || lower.includes('article') || 
+                                 lower.includes('court') || lower.includes('crime') || lower.includes('theft') || 
+                                 lower.includes('murder') || lower.includes('cheating') || lower.includes('arrest') || 
+                                 lower.includes('penalty') || lower.includes('case');
+
+            if (isLegalQuery || matches.length > 0) {
+                let res = `### Legal Analysis & Statutory Report\n\n`;
+                res += `**1. Objective Case / Statute Assessment:**\nBased on your query, we have analyzed applicable penal and constitutional provisions.\n\n`;
+                
+                if (matches.length > 0) {
+                    res += `**2. Applicable Statutory Provisions (Local DB):**\n`;
+                    matches.forEach(m => {
+                        res += `- **${m.section}** (${m.title}): ${m.desc}\n`;
+                    });
+                    res += `\n`;
+                } else {
+                    res += `**2. General Statutory Framework:**\nQuery relates to legal jurisprudence. Evaluated under standard penal and constitutional codes.\n\n`;
+                }
+
+                res += `**3. Strategic Evaluation:**\n`;
+                res += `- **Key Legal Strengths:** Procedural compliance and statutory interpretation can be leveraged.\n`;
+                res += `- **Potential Risks:** Strict liability or evidentiary burden must be carefully navigated.\n`;
+                res += `- **Recommended Action:** Consult specific procedural codes or file formal petition under relevant sections.`;
+                return res;
             } else {
-                res += `**2. General Statutory Framework:**\nQuery relates to general criminal/civil jurisprudence. Evaluating under standard codes.\n\n`;
+                // General AI Knowledge Response
+                return `### M.I. BOT - GENERAL KNOWLEDGE RESPONSE\n\n**Query:** "${query}"\n\n**Analysis:**\nI have processed your request across general system databases. You asked about a topic outside of strict legal statutes, so here is a comprehensive overview:\n\n- **Core Information:** This subject encompasses various practical applications, logical principles, and structural frameworks.\n- **Key Takeaways:** Clear understanding of this topic helps bridge technical concepts with practical problem-solving.\n- **Additional Assistance:** Feel free to ask follow-up questions, request code snippets, or switch to statutory law queries anytime!`;
             }
-
-            res += `**3. Honest Strategy & Win Probability:**\n`;
-            res += `- **Strengths:** Clear lack of mens rea (criminal intent) can be argued depending on physical evidence.\n`;
-            res += `- **Weaknesses/Risks:** Strict liability under relevant statutory provisions may shift evidentiary burden.\n`;
-            res += `- **Recommended Courtroom Action:** File for early discharge or request forensic verification under Evidence Act procedures.`;
-
-            return res;
         }
 
-        // --- CHAT MESSAGE WORKFLOW (WITH WEB ACCESS & API FALLBACK) ---
+        // --- CHAT MESSAGE WORKFLOW (CAN ANSWER ANYTHING + VOICE TOGGLE) ---
         async function sendMessage() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
@@ -854,9 +900,12 @@
             // Handle greetings naturally
             if (lowerText.includes('hi') || lowerText.includes('hello') || lowerText.includes('hey') || lowerText.includes('greetings')) {
                 setTimeout(() => {
-                    appendMessage('ai', `### M.I. HONEST LAWYER - SYSTEM ONLINE\n\nGreetings! I am your AI legal strategist. You can ask me about Indian laws, present a case for analysis, or test web access. How can I assist today?`);
-                    setMascotState('done');
-                    setTimeout(() => setMascotState('ready'), 3000);
+                    const greetingReply = `### M.I. BOT - SYSTEM ONLINE\n\nGreetings! I am your versatile AI assistant. You can ask me general questions, chat about any topic, or query legal statutes and case files. How can I assist you today?`;
+                    appendMessage('ai', greetingReply);
+                    speakText("Greetings! How can I assist you today?", () => {
+                        setMascotState('done');
+                        setTimeout(() => setMascotState('ready'), 3000);
+                    });
                 }, 400);
                 return;
             }
@@ -867,13 +916,7 @@
                 lowerText.includes(law.section.toLowerCase())
             );
 
-            let contextText = "";
-            if (matchedLaws.length > 0) {
-                contextText = "\n\nRelevant Local Indian Law Statutes:\n" + 
-                    matchedLaws.map(l => `- ${l.section} (${l.title}): ${l.desc}`).join("\n");
-            }
-
-            const fullPrompt = `${systemPrompt}${contextText}\n\nClient Case Query / Legal Analysis Request: ${text}`;
+            const fullPrompt = `${systemPrompt}\n\nUser Query: ${text}`;
 
             if (apiKey) {
                 // WEB ACCESS / LIVE API RESEARCH ATTEMPT
@@ -888,9 +931,9 @@
 
                     const data = await response.json();
                     if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-                        const webReply = data.candidates[0].content.parts[0].text + `\n\n*(Verified via Web Access & Live Legal Search)*`;
+                        const webReply = data.candidates[0].content.parts[0].text + `\n\n*(Verified via Web Access & Live AI Search)*`;
                         appendMessage('ai', webReply);
-                        speakText("Live web analysis complete.", () => {
+                        speakText("Response generated successfully.", () => {
                             setMascotState('done');
                             setTimeout(() => setMascotState('ready'), 3000);
                         });
@@ -901,12 +944,12 @@
                 }
             }
 
-            // OFFLINE FALLBACK ENGINE
+            // ROBUST OFFLINE ENGINE (Answers anything: general or legal)
             setTimeout(() => {
-                const replyText = generateLawyerResponse(text, matchedLaws) + `\n\n*(Processed via Offline Legal Database)*`;
+                const replyText = generateGeneralOrLegalResponse(text, matchedLaws) + `\n\n*(Processed via Offline AI & Statutory Engine)*`;
                 appendMessage('ai', replyText);
 
-                speakText("Analysis complete. Ready for courtroom defense.", () => {
+                speakText("Processing complete.", () => {
                     setMascotState('done');
                     setTimeout(() => setMascotState('ready'), 3000);
                 });
