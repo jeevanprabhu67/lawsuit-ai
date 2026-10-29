@@ -728,7 +728,8 @@
 
     <script>
         // --- HARDCODED API KEY CONFIGURATION ---
-        const EMBEDDED_API_KEY = "AQ.Ab8RN6KWDfUk7-4M_wpwj31nun4kNaSsszFTwzraxJT0fHyAag";
+        // REPLACE THE STRING BELOW WITH YOUR ACTUAL GEMINI API KEY
+        const EMBEDDED_API_KEY = "YOUR_ACTUAL_GEMINI_API_KEY_HERE";
 
         // --- NAVIGATION CONTROLLER ---
         function navigateTo(viewId) {
@@ -1034,7 +1035,7 @@
                     });
                 } else {
                     console.error("Gemini Response:", data);
-                    const errorMsg = "API query failed. Please verify your connection.";
+                    const errorMsg = "API query failed. Please verify your internet connection or API key.";
                     saveMessageToCurrentSession('ai', errorMsg);
                     appendMessageToUI('ai', errorMsg);
                     setMascotState('ready');
